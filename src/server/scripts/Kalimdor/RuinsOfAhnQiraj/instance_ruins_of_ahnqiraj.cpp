@@ -19,6 +19,18 @@
 #include "InstanceScript.h"
 #include "ruins_of_ahnqiraj.h"
 
+#define NUM_KALDOREI 4
+#define ACTION_YELL_KURINAXX 2
+// TODO: These may be incorrect. Contact Krofna for details
+const Position AndorovSpawnPosition = { -8598.299f, 1459.903f, 32.33472f, 2.741698f };
+const Position KaldoreiSpawnPositions[NUM_KALDOREI] =
+{
+    {},
+    {},
+    {},
+    {}
+};
+
 class instance_ruins_of_ahnqiraj : public InstanceMapScript
 {
     public:
@@ -37,6 +49,7 @@ class instance_ruins_of_ahnqiraj : public InstanceMapScript
                 _ayamissGUID    = 0;
                 _ossirianGUID   = 0;
                 _paralyzedGUID  = 0;
+                _andorovGUID    = 0;
             }
 
             void OnCreatureCreate(Creature* creature)
@@ -61,6 +74,9 @@ class instance_ruins_of_ahnqiraj : public InstanceMapScript
                     case NPC_OSSIRIAN:
                         _ossirianGUID = creature->GetGUID();
                         break;
+                    case NPC_ANDOROV:
+                        _andorovGUID = creature->GetGUID();
+                        break;
                 }
             }
 
@@ -74,8 +90,15 @@ class instance_ruins_of_ahnqiraj : public InstanceMapScript
 
             void SetData64(uint32 type, uint64 data)
             {
-                if (type == DATA_PARALYZED)
-                    _paralyzedGUID = data;
+                switch (type)
+                {
+                    case DATA_PARALYZED:
+                        _paralyzedGUID = data;
+                        break;
+                    case DATA_ANDOROV:
+                        _andorovGUID = data;
+                        break;
+                }
             }
 
             uint64 GetData64(uint32 type) const
@@ -96,6 +119,8 @@ class instance_ruins_of_ahnqiraj : public InstanceMapScript
                         return _ossirianGUID;
                     case DATA_PARALYZED:
                         return _paralyzedGUID;
+                    case DATA_ANDOROV:
+                        return _andorovGUID;
                 }
 
                 return 0;
@@ -143,6 +168,20 @@ class instance_ruins_of_ahnqiraj : public InstanceMapScript
 
                 OUT_LOAD_INST_DATA_COMPLETE;
             }
+            
+            void OnUnitDeath(Unit* unit)
+            {
+                if (unit->GetEntry() == NPC_KURINAXX)
+                {
+                    if (Creature* ossirian = instance->GetCreature(GetData64(DATA_OSSIRIAN)))
+                        ossirian->AI()->DoAction(ACTION_YELL_KURINAXX);
+
+                    instance->SummonCreature(NPC_ANDOROV, AndorovSpawnPosition);
+                    
+                    for (uint8 i = 0; i < NUM_KALDOREI; ++i)
+                        instance->SummonCreature(NPC_KALDOREI_ELITE, KaldoreiSpawnPositions[i]);
+                }
+            }
 
         private:
             uint64 _kurinaxxGUID;
@@ -152,6 +191,7 @@ class instance_ruins_of_ahnqiraj : public InstanceMapScript
             uint64 _ayamissGUID;
             uint64 _ossirianGUID;
             uint64 _paralyzedGUID;
+            uint64 _andorovGUID;
         };
 
         InstanceScript* GetInstanceScript(InstanceMap* map) const

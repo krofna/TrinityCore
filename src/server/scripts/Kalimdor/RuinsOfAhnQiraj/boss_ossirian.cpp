@@ -22,6 +22,7 @@
 #include "SpellInfo.h"
 #include "WorldPacket.h"
 #include "Opcodes.h"
+#include "CreatureTextMgr.h"
 
 enum Texts
 {
@@ -29,7 +30,8 @@ enum Texts
     SAY_INTRO               = 1,
     SAY_AGGRO               = 2,
     SAY_SLAY                = 3,
-    SAY_DEATH               = 4
+    SAY_DEATH               = 4,
+    SAY_KURINAXX_DEATH      = 5
 };
 
 enum Spells
@@ -45,7 +47,8 @@ enum Spells
 
 enum Actions
 {
-    ACTION_TRIGGER_WEAKNESS = 1
+    ACTION_TRIGGER_WEAKNESS = 1,
+    ACTION_YELL_KURINAXX    = 2
 };
 
 enum Events
@@ -119,10 +122,17 @@ class boss_ossirian : public CreatureScript
 
             void DoAction(const int32 action)
             {
-                if (action == ACTION_TRIGGER_WEAKNESS)
-                    if (Creature* Trigger = me->GetMap()->GetCreature(TriggerGUID))
-                        if (!Trigger->HasUnitState(UNIT_STATE_CASTING))
-                            Trigger->CastSpell(Trigger, SpellWeakness[urand(0, 4)], false);
+                switch (action)
+                {
+                    case ACTION_TRIGGER_WEAKNESS:
+                        if (Creature* Trigger = me->GetMap()->GetCreature(TriggerGUID))
+                            if (!Trigger->HasUnitState(UNIT_STATE_CASTING))
+                                Trigger->CastSpell(Trigger, SpellWeakness[urand(0, 4)], false);
+                        break;
+                    case ACTION_YELL_KURINAXX:
+                        sCreatureTextMgr->SendChat(me, SAY_KURINAXX_DEATH, 0, CHAT_MSG_ADDON, LANG_ADDON, TEXT_RANGE_ZONE);
+                        break;
+                }
             }
 
             void EnterCombat(Unit* /*who*/)

@@ -20,15 +20,16 @@
 
 enum DataTypes
 {
-    DATA_KURINNAXX          = 0,
-    DATA_RAJAXX             = 1,
-    DATA_MOAM               = 2,
-    DATA_BURU               = 3,
-    DATA_AYAMISS            = 4,
-    DATA_OSSIRIAN           = 5,
-    NUM_ENCOUNTER           = 6,
+    DATA_KURINNAXX              = 0,
+    DATA_RAJAXX                 = 1,
+    DATA_MOAM                   = 2,
+    DATA_BURU                   = 3,
+    DATA_AYAMISS                = 4,
+    DATA_OSSIRIAN               = 5,
+    NUM_ENCOUNTER               = 6,
 
-    DATA_PARALYZED          = 7
+    DATA_PARALYZED              = 7,
+    DATA_ANDOROV                = 8
 };
 
 enum Creatures
@@ -47,7 +48,9 @@ enum Creatures
     NPC_HATCHLING               = 15521,
     NPC_LARVA                   = 15555,
     NPC_SWARMER                 = 15546,
-    NPC_HORNET                  = 15934
+    NPC_HORNET                  = 15934,
+    NPC_ANDOROV                 = 15471,
+    NPC_KALDOREI_ELITE          = 15473
 };
 
 enum GameObjects
